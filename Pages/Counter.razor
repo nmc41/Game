@@ -1,0 +1,49 @@
+@page "/counter"
+@inject IJSRuntime JS;
+
+<h1>Counter</h1>
+
+<p>Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">@Title</button>
+
+
+<div id="sketch">
+  <canvas id="paint"></canvas>
+</div>
+
+
+
+<Canvas @ref="helper_canvas" id="paint" width="150px" height="300px" />
+
+@code {
+    private Canvas helper_canvas;
+
+    protected override async Task OnAfterRenderAsync(bool first_render)
+    {
+        if (first_render)
+        {
+            await using (var ctx1 = await helper_canvas.GetContext2DAsync())
+            {
+                await ctx1.FontAsync("48px solid");
+                @* await ctx1.FillTextAsync("Hello", 0, 150); *@
+                await JS.InvokeAsync<string>("bloop");
+
+                await ctx1.GetImageDataAsync(0, 0, 150, 300);
+            }
+
+        }
+    }
+
+    [Parameter]
+    public string Title {get; set;}
+
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+
+        Title = "You dun goofed, my friend!";
+    }
+}
